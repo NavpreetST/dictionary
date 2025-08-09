@@ -9,6 +9,8 @@ export interface Word {
   article: string;
   definition: string;
   translation: string;
+  examples?: string;
+  alternateMeanings?: string;
   createdAt: string;
 }
 

@@ -13,6 +13,8 @@ export interface Word {
   article: string;
   definition: string;
   translation: string;
+  examples?: string[];
+  alternateMeanings?: string[];
   createdAt: string;
 }
 
@@ -124,11 +126,13 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800">
+    <div className="min-h-screen">
       <div className="container mx-auto p-4 md:p-8 max-w-6xl">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">Mein persönliches Wörterbuch</h1>
-          <p className="text-gray-600 mt-2">Your personal space to grow your German vocabulary.</p>
+        <header className="text-center mb-12 animate-slide-in">
+          <h1 className="text-5xl md:text-6xl font-light text-white mb-4">
+            Deutsch<span className="font-semibold bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-transparent">Wörter</span>
+          </h1>
+          <p className="text-white/80 text-lg font-light">Your personal space to master German vocabulary</p>
         </header>
 
         <main>

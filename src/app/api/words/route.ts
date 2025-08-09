@@ -90,7 +90,17 @@ async function getWordDetailsFromAI(word: string): Promise<{
   }
 
   try {
-    const prompt = `For the German word "${word}", provide its part of speech (e.g., Noun, Verb, Adjective), its definitive article (der, die, das) if it's a noun, a simple English definition, and the most common English translation. If the word is not a noun, the article should be "–". Use "Other" for parts of speech you are unsure about. Format the response as a JSON object with keys "partOfSpeech", "article", "definition", and "translation". Example: {"partOfSpeech": "Noun", "article": "der", "definition": "A domestic canine.", "translation": "dog"}`;
+    const prompt = `For the German word "${word}", provide:
+1. Part of speech (Noun, Verb, Adjective, Adverb, Other)
+2. Article (der/die/das for nouns, "–" for others)
+3. Primary English translation
+4. Simple English definition
+5. 2-3 German example sentences using the word
+6. Any alternate meanings or translations (if applicable)
+
+Format as JSON: {"partOfSpeech": "Noun", "article": "der", "translation": "dog", "definition": "A domestic canine", "examples": ["Der Hund bellt laut.", "Ich gehe mit dem Hund spazieren."], "alternateMeanings": ["colloquial: person (derogatory)"]}`;
+
+If no examples or alternate meanings exist, use empty arrays.`;
     
     const payload = {
       contents: [{

@@ -10,37 +10,40 @@ export default function DeleteModal({ wordToDelete, onConfirm, onCancel }: Delet
   if (!wordToDelete) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-      <div className="bg-white w-11/12 md:max-w-md mx-auto rounded-xl shadow-lg z-50 overflow-y-auto p-6 transform scale-95">
+    <div className="modal-overlay fixed inset-0 bg-black/50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+      <div className="modal-container glass w-11/12 md:max-w-md mx-auto rounded-2xl shadow-2xl z-50 overflow-y-auto p-8 transform">
         <div className="text-center">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="w-12 h-12 flex items-center text-red-500 mx-auto" 
-            viewBox="0 0 20 20" 
-            fill="currentColor"
-          >
-            <path 
-              fillRule="evenodd" 
-              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.21 3.03-1.742 3.03H4.42c-1.532 0-2.492-1.696-1.742-3.03l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" 
-              clipRule="evenodd" 
-            />
-          </svg>
-          <h3 className="text-xl font-bold text-gray-800 mt-4">Delete Word</h3>
-          <p className="text-sm text-gray-500 mt-2">
-            Are you sure you want to delete "<span className="font-semibold">{wordToDelete}</span>"? 
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/20 mb-6">
+            <svg 
+              className="h-8 w-8 text-red-400" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="2" 
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" 
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">Delete Word</h3>
+          <p className="text-white/80 text-sm leading-relaxed">
+            Are you sure you want to delete <span className="font-semibold text-white">"{wordToDelete}"</span>?<br />
             This action cannot be undone.
           </p>
         </div>
-        <div className="mt-6 flex justify-center gap-4">
+        <div className="mt-8 flex justify-center gap-3">
           <button 
             onClick={onCancel}
-            className="py-2 px-6 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+            className="flex-1 py-3 px-6 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all duration-200 font-medium backdrop-blur-sm"
           >
             Cancel
           </button>
           <button 
             onClick={onConfirm}
-            className="py-2 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="flex-1 py-3 px-6 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             Delete
           </button>

@@ -31,21 +31,21 @@ export default function WordInput({ onAddWord, error }: WordInputProps) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md mb-8">
+    <div className="glass rounded-2xl p-6 mb-8 hover-lift animate-slide-in">
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="flex-grow w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          placeholder="Enter a German word..."
+          className="input-modern flex-grow"
+          placeholder="Enter a German word... (e.g., Haus, laufen, schön)"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading || !inputValue.trim()}
-          className="w-full sm:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
           {loading ? (
             <div className="flex items-center justify-center">
@@ -53,12 +53,19 @@ export default function WordInput({ onAddWord, error }: WordInputProps) {
               Adding...
             </div>
           ) : (
-            'Add Word'
+            <>              
+              <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Word
+            </>
           )}
         </button>
       </form>
       {error && (
-        <div className="text-red-500 mt-2 text-sm">{error}</div>
+        <div className="mt-4 p-3 bg-red-100/80 backdrop-blur-sm border border-red-200 rounded-lg text-red-700 text-sm">
+          {error}
+        </div>
       )}
     </div>
   );

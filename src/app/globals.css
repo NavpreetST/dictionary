@@ -1,25 +1,123 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 body {
   font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
 }
 
-/* Custom styles for better appearance */
+/* Custom scrollbar */
 .table-container::-webkit-scrollbar {
-  display: none;
+  width: 6px;
+  height: 6px;
 }
 
-.table-container {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
 }
 
+.table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Smooth transitions */
 .modal-overlay {
-  transition: opacity 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
 }
 
 .modal-container {
-  transition: transform 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Word type badges */
+.word-type-noun {
+  @apply bg-blue-100 text-blue-800 border border-blue-200;
+}
+
+.word-type-verb {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.word-type-adjective {
+  @apply bg-purple-100 text-purple-800 border border-purple-200;
+}
+
+.word-type-adverb {
+  @apply bg-orange-100 text-orange-800 border border-orange-200;
+}
+
+.word-type-other {
+  @apply bg-gray-100 text-gray-800 border border-gray-200;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+
+/* Hover animations */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700;
+  @apply text-white font-medium px-6 py-3 rounded-xl;
+  @apply transform transition-all duration-200 hover:scale-105;
+  @apply shadow-lg hover:shadow-xl;
+}
+
+.btn-filter {
+  @apply px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200;
+  @apply hover:scale-105 transform;
+}
+
+.btn-filter-active {
+  @apply bg-white text-gray-800 shadow-lg;
+}
+
+.btn-filter-inactive {
+  @apply bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm;
+}
+
+/* Input styles */
+.input-modern {
+  @apply w-full px-4 py-3 rounded-xl border-0 bg-white/90 backdrop-blur-sm;
+  @apply focus:bg-white focus:ring-2 focus:ring-white/50 focus:outline-none;
+  @apply placeholder-gray-500 text-gray-800;
+  @apply transition-all duration-300;
+}
+
+/* Card animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }

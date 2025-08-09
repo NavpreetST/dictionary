@@ -21,17 +21,18 @@ export default function FilterButtons({ filters, setFilters, words }: FilterButt
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-md mb-8">
+    <div className="glass rounded-2xl p-6 mb-8 hover-lift">
       {/* Part of Speech filters */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-3 mb-6">
+        <span className="text-white/90 font-medium text-sm self-center mr-2">Filter by type:</span>
         {posTypes.map((pos) => (
           <button
             key={pos}
             onClick={() => handlePosFilter(pos)}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${ 
+            className={`btn-filter ${ 
               filters.pos === pos
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                ? 'btn-filter-active'
+                : 'btn-filter-inactive'
             }`}
           >
             {pos}
@@ -40,15 +41,16 @@ export default function FilterButtons({ filters, setFilters, words }: FilterButt
       </div>
 
       {/* Alphabet filters */}
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-2">
+        <span className="text-white/90 font-medium text-sm self-center mr-2">Filter by letter:</span>
         {alphabet.map((letter) => (
           <button
             key={letter}
             onClick={() => handleAlphaFilter(letter)}
-            className={`w-8 h-8 text-xs font-medium rounded-md transition-colors capitalize ${
+            className={`w-9 h-9 text-xs font-semibold rounded-lg transition-colors capitalize ${
               filters.alpha === letter
-                ? 'bg-blue-500 text-white font-bold'
-                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                ? 'bg-white text-gray-800 shadow-lg'
+                : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
             }`}
           >
             {letter}
