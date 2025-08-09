@@ -64,6 +64,8 @@ class Database {
   async addWord(word: Omit<Word, 'id' | 'createdAt'>): Promise<Word> {
     if (!this.db) throw new Error('Database not initialized');
     
+    const databaseInstance = this.db; // Capture the Database class's db here
+
     return new Promise((resolve, reject) => {
       const examplesJson = JSON.stringify(word.examples || []);
       const alternateMeaningsJson = JSON.stringify(word.alternateMeanings || []);
@@ -73,23 +75,23 @@ class Database {
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `);
       
-      stmt.run([word.german, word.partOfSpeech, word.article, word.definition, word.translation, examplesJson, alternateMeaningsJson], function(err) {
+      stmt.run([word.german, word.partOfSpeech, word.article, word.definition, word.translation, examplesJson, alternateMeaningsJson], function(this: sqlite3.RunResult, err) {
         if (err) {
           reject(err);
           return;
         }
         
-        // Get the inserted word
-        const db = stmt.db;
-        db.get('SELECT * FROM words WHERE id = ?', [this.lastID], (err, row: any) => {
+        const lastID = this.lastID; // This should be fine
+
+        databaseInstance.get('SELECT * FROM words WHERE id = ?', [lastID], (err: Error | null, row: any) => {
           if (err) {
             reject(err);
           } else {
-            // Parse JSON fields back to arrays
             const parsedWord: Word = {
               ...row,
               examples: row.examples ? JSON.parse(row.examples) : [],
-              alternateMeanings: row.alternateMeanings ? JSON.parse(row.alternateMeanings) : []
+              alternateMeanings: row.alternateMeanings ? JSON.parse(row.alternateMeanings) : [],
+              createdAt: new Date(row.createdAt).toISOString(),
             };
             resolve(parsedWord);
           }

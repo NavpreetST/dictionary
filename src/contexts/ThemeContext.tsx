@@ -13,19 +13,17 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState(() => {
-    // Initialize from localStorage if available (SSR safe)
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('deutsche-words-theme');
-      if (saved && themes[saved]) {
-        return saved;
-      }
-    }
-    return 'ocean';
-  });
+  const [currentTheme, setCurrentTheme] = useState('ocean'); // Default theme for SSR
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    // Read from localStorage after component mounts on client
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('deutsche-words-theme');
+      if (saved && themes[saved]) {
+        setCurrentTheme(saved);
+      }
+    }
     setIsLoaded(true);
   }, []);
 

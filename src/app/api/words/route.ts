@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       wordDetails = await Promise.race([
         getWordDetailsFromAI(germanWord.trim().toLowerCase()),
         new Promise<any>((_, reject) => 
-          setTimeout(() => reject(new Error('API timeout')), 10000)
+          setTimeout(() => reject(new Error('API timeout')), 25000) // Increased timeout to 25 seconds
         )
       ]);
     } catch (timeoutError) {

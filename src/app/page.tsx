@@ -65,6 +65,7 @@ export default function Home() {
   const addWord = async (germanWord: string) => {
     try {
       setError('');
+      console.log('Attempting to add word:', germanWord);
       
       // Create an AbortController for timeout
       const abortController = new AbortController();
@@ -80,23 +81,30 @@ export default function Home() {
       });
       
       clearTimeout(timeoutId);
+      console.log('API response status:', response.status);
 
       const data = await response.json();
+      console.log('API response data:', data);
       
       if (response.ok) {
-        await fetchWords(); // Refresh the list
+        console.log('Word added successfully by API. Optimistically updating UI.');
+        // Optimistically add the new word to the state
+        setWords((prevWords) => [...prevWords, data.word]);
+        // Refresh the list in the background to ensure full consistency
+        fetchWords(); 
         return true;
       } else {
+        console.log('API response not OK. Setting error.');
         setError(data.error || 'Failed to add word');
         return false;
       }
     } catch (error) {
+      console.error('Error in addWord function:', error);
       if (error instanceof Error && error.name === 'AbortError') {
         setError('Request timed out. Please try again.');
       } else {
         setError('Failed to add word. Please try again.');
       }
-      console.error('Error adding word:', error);
       return false;
     }
   };
