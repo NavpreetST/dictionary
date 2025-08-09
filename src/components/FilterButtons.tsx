@@ -1,6 +1,7 @@
 'use client';
 
 import { Word } from '@/app/page';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface FilterButtonsProps {
   filters: { pos: string; alpha: string };
@@ -9,6 +10,7 @@ interface FilterButtonsProps {
 }
 
 export default function FilterButtons({ filters, setFilters, words }: FilterButtonsProps) {
+  const { theme } = useTheme();
   const posTypes = ['All', 'Noun', 'Verb', 'Adjective', 'Other'];
   const alphabet = ['All', ...'abcdefghijklmnopqrstuvwxyz'.split('')];
 
@@ -21,18 +23,18 @@ export default function FilterButtons({ filters, setFilters, words }: FilterButt
   };
 
   return (
-    <div className="glass rounded-2xl p-6 mb-8 hover-lift">
+    <div className={`${theme.glass} rounded-2xl p-6 hover-lift`}>
       {/* Part of Speech filters */}
       <div className="flex flex-wrap gap-3 mb-6">
-        <span className="text-white/90 font-medium text-sm self-center mr-2">Filter by type:</span>
+        <span className={`${theme.text.secondary} font-medium text-sm self-center mr-2`}>Filter by type:</span>
         {posTypes.map((pos) => (
           <button
             key={pos}
             onClick={() => handlePosFilter(pos)}
-            className={`btn-filter ${ 
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 hover:scale-105 ${ 
               filters.pos === pos
-                ? 'btn-filter-active'
-                : 'btn-filter-inactive'
+                ? theme.button.filterActive
+                : theme.button.filter
             }`}
           >
             {pos}
@@ -42,15 +44,15 @@ export default function FilterButtons({ filters, setFilters, words }: FilterButt
 
       {/* Alphabet filters */}
       <div className="flex flex-wrap gap-2">
-        <span className="text-white/90 font-medium text-sm self-center mr-2">Filter by letter:</span>
+        <span className={`${theme.text.secondary} font-medium text-sm self-center mr-2`}>Filter by letter:</span>
         {alphabet.map((letter) => (
           <button
             key={letter}
             onClick={() => handleAlphaFilter(letter)}
-            className={`w-9 h-9 text-xs font-semibold rounded-lg transition-colors capitalize ${
+            className={`w-9 h-9 text-xs font-semibold rounded-lg transition-all duration-200 hover:scale-105 capitalize ${
               filters.alpha === letter
-                ? 'bg-white text-gray-800 shadow-lg'
-                : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+                ? theme.button.filterActive
+                : theme.button.filter
             }`}
           >
             {letter}

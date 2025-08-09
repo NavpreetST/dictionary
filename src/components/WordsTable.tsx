@@ -1,28 +1,31 @@
 'use client';
 
 import { Word } from '@/app/page';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface WordsTableProps {
   words: Word[];
   onDeleteWord: (german: string) => void;
 }
 
-function getWordTypeClass(partOfSpeech: string): string {
+function getWordTypeClass(partOfSpeech: string, theme: any): string {
   switch (partOfSpeech.toLowerCase()) {
     case 'noun':
-      return 'word-type-noun';
+      return theme.wordTypes.noun;
     case 'verb':
-      return 'word-type-verb';
+      return theme.wordTypes.verb;
     case 'adjective':
-      return 'word-type-adjective';
+      return theme.wordTypes.adjective;
     case 'adverb':
-      return 'word-type-adverb';
+      return theme.wordTypes.adverb;
     default:
-      return 'word-type-other';
+      return theme.wordTypes.other;
   }
 }
 
 export default function WordsTable({ words, onDeleteWord }: WordsTableProps) {
+  const { theme } = useTheme();
+  
   if (words.length === 0) {
     return (
       <div className="glass rounded-2xl overflow-hidden">

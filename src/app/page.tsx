@@ -1,10 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 import WordInput from '@/components/WordInput';
 import WordsTable from '@/components/WordsTable';
 import FilterButtons from '@/components/FilterButtons';
 import DeleteModal from '@/components/DeleteModal';
+import SearchBar from '@/components/SearchBar';
+import ThemeSelector from '@/components/ThemeSelector';
+import Pagination from '@/components/Pagination';
 
 export interface Word {
   id?: number;
@@ -19,12 +23,17 @@ export interface Word {
 }
 
 export default function Home() {
+  const { theme } = useTheme();
   const [words, setWords] = useState<Word[]>([]);
   const [filters, setFilters] = useState({ pos: 'All', alpha: 'All' });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [wordToDelete, setWordToDelete] = useState<string | null>(null);
+
+  const ITEMS_PER_PAGE = 12;
 
   // Fetch all words on component mount
   useEffect(() => {
@@ -111,34 +120,101 @@ export default function Home() {
     setWordToDelete(null);
   };
 
-  const filteredWords = words.filter((word) => {
-    const posMatch = filters.pos === 'All' || word.partOfSpeech === filters.pos;
-    const alphaMatch = filters.alpha === 'All' || word.german.startsWith(filters.alpha);
-    return posMatch && alphaMatch;
-  });
+  // Filtering and search logic
+  const filteredAndSearchedWords = useMemo(() => {
+    let filtered = words;
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter((word) => 
+        word.german.toLowerCase().includes(term) ||
+        word.translation.toLowerCase().includes(term) ||
+        word.definition.toLowerCase().includes(term)
+      );
+    }
+
+    // Apply part of speech filter
+    if (filters.pos !== 'All') {
+      filtered = filtered.filter((word) => word.partOfSpeech === filters.pos);
+    }
+
+    // Apply alphabet filter
+    if (filters.alpha !== 'All') {
+      filtered = filtered.filter((word) => word.german.startsWith(filters.alpha));
+    }
+
+    return filtered;
+  }, [words, searchTerm, filters]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredAndSearchedWords.length / ITEMS_PER_PAGE);
+  const paginatedWords = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredAndSearchedWords.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredAndSearchedWords, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filters]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className={`min-h-screen ${theme.gradient} flex items-center justify-center`}>
+        <div className={`${theme.glass} p-8 rounded-2xl`}>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-current mx-auto mb-4"></div>
+          <p className={theme.text.primary}>Loading your vocabulary...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${theme.gradient}`}>
       <div className="container mx-auto p-4 md:p-8 max-w-6xl">
-        <header className="text-center mb-12 animate-slide-in">
-          <h1 className="text-5xl md:text-6xl font-light text-white mb-4">
-            Deutsch<span className="font-semibold bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-transparent">Wörter</span>
-          </h1>
-          <p className="text-white/80 text-lg font-light">Your personal space to master German vocabulary</p>
+        {/* Header with theme selector */}
+        <header className="flex items-center justify-between mb-8">
+          <div className="flex-1 text-center">
+            <h1 className={`text-4xl md:text-5xl font-light ${theme.text.primary} mb-2`}>
+              Deutsch<span className={`font-semibold ${theme.text.accent}`}>Wörter</span>
+            </h1>
+            <p className={`${theme.text.secondary} text-lg font-light`}>
+              Your personal space to master German vocabulary
+            </p>
+          </div>
+          <div className="absolute top-4 right-4">
+            <ThemeSelector />
+          </div>
         </header>
 
-        <main>
+        <main className="space-y-6">
           <WordInput onAddWord={addWord} error={error} />
-          <FilterButtons filters={filters} setFilters={setFilters} words={words} />
-          <WordsTable words={filteredWords} onDeleteWord={openDeleteModal} />
+          
+          <SearchBar 
+            searchTerm={searchTerm} 
+            onSearchChange={setSearchTerm} 
+            resultCount={filteredAndSearchedWords.length}
+          />
+          
+          <FilterButtons 
+            filters={filters} 
+            setFilters={setFilters} 
+            words={words} 
+          />
+          
+          <WordsTable 
+            words={paginatedWords} 
+            onDeleteWord={openDeleteModal} 
+          />
+          
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            totalItems={filteredAndSearchedWords.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+          />
         </main>
 
         {deleteModalOpen && (

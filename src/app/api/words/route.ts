@@ -98,9 +98,9 @@ async function getWordDetailsFromAI(word: string): Promise<{
 5. 2-3 German example sentences using the word
 6. Any alternate meanings or translations (if applicable)
 
-Format as JSON: {"partOfSpeech": "Noun", "article": "der", "translation": "dog", "definition": "A domestic canine", "examples": ["Der Hund bellt laut.", "Ich gehe mit dem Hund spazieren."], "alternateMeanings": ["colloquial: person (derogatory)"]}`;
+Format as JSON: {"partOfSpeech": "Noun", "article": "der", "translation": "dog", "definition": "A domestic canine", "examples": ["Der Hund bellt laut.", "Ich gehe mit dem Hund spazieren."], "alternateMeanings": ["colloquial: person (derogatory)"]}`
 
-If no examples or alternate meanings exist, use empty arrays.`;
+// If no examples or alternate meanings exist, use empty arrays.`;
     
     const payload = {
       contents: [{

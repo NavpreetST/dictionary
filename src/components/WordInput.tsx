@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface WordInputProps {
   onAddWord: (germanWord: string) => Promise<boolean>;
@@ -8,6 +9,7 @@ interface WordInputProps {
 }
 
 export default function WordInput({ onAddWord, error }: WordInputProps) {
+  const { theme } = useTheme();
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -31,21 +33,21 @@ export default function WordInput({ onAddWord, error }: WordInputProps) {
   };
 
   return (
-    <div className="glass rounded-2xl p-6 mb-8 hover-lift animate-slide-in">
+    <div className={`${theme.glass} rounded-2xl p-6 hover-lift animate-slide-in`}>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="input-modern flex-grow"
+          className={`flex-grow px-4 py-3 rounded-xl border-0 transition-all duration-300 focus:outline-none focus:ring-2 ${theme.input.bg} ${theme.input.text} ${theme.input.placeholder} ${theme.input.border}`}
           placeholder="Enter a German word... (e.g., Haus, laufen, schön)"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading || !inputValue.trim()}
-          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${theme.button.primary} ${theme.button.primaryHover}`}
         >
           {loading ? (
             <div className="flex items-center justify-center">
