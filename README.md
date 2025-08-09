@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Deutsche Words - Personal German Dictionary
+
+A Next.js application for building your personal German vocabulary with automatic word lookup, articles, and definitions.
+
+## Features
+
+- 🇩🇪 **German Word Management**: Add German words and automatically get their articles, translations, and definitions
+- 🤖 **AI-Powered Lookup**: Integration with Google Gemini API for accurate word information (with fallback for common words)
+- 🗂️ **Smart Filtering**: Filter words by part of speech (Noun, Verb, Adjective, etc.) and alphabetically
+- 💾 **Local Storage**: Uses SQLite database for local data storage
+- 📱 **Responsive Design**: Works great on desktop and mobile devices
+- ⚡ **Fast Performance**: Built with Next.js and optimized for speed
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18+ installed
+- npm or yarn package manager
+
+### Installation
+
+1. Clone the repository or navigate to your project directory
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Set up environment variables (optional):
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Add your Google Gemini API key if you want AI-powered lookups:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
+   Get your API key from: https://ai.google.dev/
+
+4. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Usage
+
+1. **Add Words**: Type a German word in the input field and click "Add Word"
+2. **Browse Dictionary**: View all your words in the table with articles, translations, and definitions
+3. **Filter Words**: Use the filter buttons to show specific parts of speech or words starting with certain letters
+4. **Delete Words**: Click the X button next to any word to remove it from your dictionary
+
+## Database
+
+The application uses SQLite for local storage. The database file `deutsche_words.db` will be created automatically in your project root when you add your first word.
+
+## API Integration
+
+- **With Gemini API**: Provides accurate articles, definitions, and translations for German words
+- **Fallback Mode**: Uses built-in dictionary for common German words when API key is not provided
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: SQLite3
+- **Font**: Inter (Google Fonts)
+- **AI Integration**: Google Gemini API
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── words/         # CRUD operations for words
+│   │   └── lookup/        # AI-powered word lookup
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx          # Main application page
+├── components/
+│   ├── DeleteModal.tsx   # Confirmation modal for deletions
+│   ├── FilterButtons.tsx # Part of speech and alphabet filters
+│   ├── WordInput.tsx     # Word input form
+│   └── WordsTable.tsx    # Dictionary table display
+└── lib/
+    └── database.ts       # SQLite database utilities
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project is based on your original HTML implementation and has been converted to a modern Next.js application with local database storage.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Future Enhancements
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] Export/Import dictionary data
+- [ ] Search functionality
+- [ ] Pronunciation guides
+- [ ] Example sentences
+- [ ] Progress tracking and statistics
+- [ ] Dark mode support
