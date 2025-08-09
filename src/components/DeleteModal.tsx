@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 interface DeleteModalProps {
   wordToDelete: string | null;
   onConfirm: () => void;
@@ -7,11 +9,13 @@ interface DeleteModalProps {
 }
 
 export default function DeleteModal({ wordToDelete, onConfirm, onCancel }: DeleteModalProps) {
+  const { theme } = useTheme();
+  
   if (!wordToDelete) return null;
 
   return (
     <div className="modal-overlay fixed inset-0 bg-black/50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-      <div className="modal-container glass w-11/12 md:max-w-md mx-auto rounded-2xl shadow-2xl z-50 overflow-y-auto p-8 transform">
+      <div className={`modal-container ${theme.glass} w-11/12 md:max-w-md mx-auto rounded-2xl shadow-2xl z-50 overflow-y-auto p-8 transform`}>
         <div className="text-center">
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/20 mb-6">
             <svg 
@@ -28,16 +32,16 @@ export default function DeleteModal({ wordToDelete, onConfirm, onCancel }: Delet
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Delete Word</h3>
-          <p className="text-white/80 text-sm leading-relaxed">
-            Are you sure you want to delete <span className="font-semibold text-white">"{wordToDelete}"</span>?<br />
+          <h3 className={`text-xl font-semibold ${theme.text.primary} mb-2`}>Delete Word</h3>
+          <p className={`${theme.text.secondary} text-sm leading-relaxed`}>
+            Are you sure you want to delete <span className={`font-semibold ${theme.text.primary}`}>"{wordToDelete}"</span>?<br />
             This action cannot be undone.
           </p>
         </div>
         <div className="mt-8 flex justify-center gap-3">
           <button 
             onClick={onCancel}
-            className="flex-1 py-3 px-6 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all duration-200 font-medium backdrop-blur-sm"
+            className={`flex-1 py-3 px-6 rounded-xl transition-all duration-200 font-medium ${theme.button.filter}`}
           >
             Cancel
           </button>
