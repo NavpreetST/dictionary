@@ -28,8 +28,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get word details directly
-    const wordDetails = await getWordDetailsFromAI(germanWord.trim().toLowerCase());
+    console.log('Adding word:', germanWord);
+    
+    // Get word details with shorter timeout and fallback
+    let wordDetails;
+    try {
+      wordDetails = await Promise.race([
+        getWordDetailsFromAI(germanWord.trim().toLowerCase()),
+        new Promise<any>((_, reject) => 
+          setTimeout(() => reject(new Error('API timeout')), 10000)
+        )
+      ]);
+    } catch (timeoutError) {
+      console.log('API timeout, using fallback for:', germanWord);
+      wordDetails = getBasicWordDetails(germanWord.trim().toLowerCase());
+    }
+    
+    console.log('Got word details:', wordDetails);
     
     const db = await getDatabase();
     const newWord = await db.addWord({
@@ -38,13 +53,16 @@ export async function POST(request: NextRequest) {
       article: wordDetails.article,
       definition: wordDetails.definition,
       translation: wordDetails.translation,
+      examples: wordDetails.examples || [],
+      alternateMeanings: wordDetails.alternateMeanings || [],
     });
 
+    console.log('Word added successfully:', newWord);
     return NextResponse.json({ word: newWord }, { status: 201 });
   } catch (error) {
     console.error('Error adding word:', error);
     return NextResponse.json(
-      { error: 'Failed to add word' },
+      { error: `Failed to add word: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     );
   }
@@ -80,6 +98,8 @@ async function getWordDetailsFromAI(word: string): Promise<{
   article: string;
   definition: string;
   translation: string;
+  examples?: string[];
+  alternateMeanings?: string[];
 }> {
   // Add your Google Gemini API key here
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -135,6 +155,8 @@ Format as JSON: {"partOfSpeech": "Noun", "article": "der", "translation": "dog",
         article: wordData.article || '–',
         definition: wordData.definition,
         translation: wordData.translation,
+        examples: wordData.examples || [],
+        alternateMeanings: wordData.alternateMeanings || [],
       };
     } else {
       throw new Error("Invalid response structure from the API.");

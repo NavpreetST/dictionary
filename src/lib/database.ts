@@ -9,8 +9,8 @@ export interface Word {
   article: string;
   definition: string;
   translation: string;
-  examples?: string;
-  alternateMeanings?: string;
+  examples?: string[];
+  alternateMeanings?: string[];
   createdAt: string;
 }
 
@@ -39,13 +39,22 @@ class Database {
             article TEXT NOT NULL,
             definition TEXT NOT NULL,
             translation TEXT NOT NULL,
+            examples TEXT DEFAULT '[]',
+            alternateMeanings TEXT DEFAULT '[]',
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
           )
         `, (err) => {
           if (err) {
             reject(err);
           } else {
-            resolve();
+            // Add columns to existing table if they don't exist
+            this.db!.run('ALTER TABLE words ADD COLUMN examples TEXT DEFAULT \'[]\';', (err) => {
+              // Ignore error if column already exists
+              this.db!.run('ALTER TABLE words ADD COLUMN alternateMeanings TEXT DEFAULT \'[]\';', (err) => {
+                // Ignore error if column already exists
+                resolve();
+              });
+            });
           }
         });
       });
@@ -56,12 +65,15 @@ class Database {
     if (!this.db) throw new Error('Database not initialized');
     
     return new Promise((resolve, reject) => {
+      const examplesJson = JSON.stringify(word.examples || []);
+      const alternateMeaningsJson = JSON.stringify(word.alternateMeanings || []);
+      
       const stmt = this.db!.prepare(`
-        INSERT OR REPLACE INTO words (german, partOfSpeech, article, definition, translation)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO words (german, partOfSpeech, article, definition, translation, examples, alternateMeanings)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `);
       
-      stmt.run([word.german, word.partOfSpeech, word.article, word.definition, word.translation], function(err) {
+      stmt.run([word.german, word.partOfSpeech, word.article, word.definition, word.translation, examplesJson, alternateMeaningsJson], function(err) {
         if (err) {
           reject(err);
           return;
@@ -69,11 +81,17 @@ class Database {
         
         // Get the inserted word
         const db = stmt.db;
-        db.get('SELECT * FROM words WHERE id = ?', [this.lastID], (err, row) => {
+        db.get('SELECT * FROM words WHERE id = ?', [this.lastID], (err, row: any) => {
           if (err) {
             reject(err);
           } else {
-            resolve(row as Word);
+            // Parse JSON fields back to arrays
+            const parsedWord: Word = {
+              ...row,
+              examples: row.examples ? JSON.parse(row.examples) : [],
+              alternateMeanings: row.alternateMeanings ? JSON.parse(row.alternateMeanings) : []
+            };
+            resolve(parsedWord);
           }
         });
       });
@@ -86,11 +104,17 @@ class Database {
     if (!this.db) throw new Error('Database not initialized');
     
     return new Promise((resolve, reject) => {
-      this.db!.all('SELECT * FROM words ORDER BY german ASC', (err, rows) => {
+      this.db!.all('SELECT * FROM words ORDER BY german ASC', (err, rows: any[]) => {
         if (err) {
           reject(err);
         } else {
-          resolve(rows as Word[]);
+          // Parse JSON fields back to arrays
+          const parsedWords: Word[] = rows.map(row => ({
+            ...row,
+            examples: row.examples ? JSON.parse(row.examples) : [],
+            alternateMeanings: row.alternateMeanings ? JSON.parse(row.alternateMeanings) : []
+          }));
+          resolve(parsedWords);
         }
       });
     });

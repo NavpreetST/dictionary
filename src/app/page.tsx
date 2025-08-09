@@ -9,6 +9,7 @@ import DeleteModal from '@/components/DeleteModal';
 import SearchBar from '@/components/SearchBar';
 import ThemeSelector from '@/components/ThemeSelector';
 import Pagination from '@/components/Pagination';
+import WordDetailModal from '@/components/WordDetailModal';
 
 export interface Word {
   id?: number;
@@ -25,13 +26,15 @@ export interface Word {
 export default function Home() {
   const { theme } = useTheme();
   const [words, setWords] = useState<Word[]>([]);
-  const [filters, setFilters] = useState({ pos: 'All', alpha: 'All' });
+  const [filters, setFilters] = useState({ pos: 'All', alpha: 'All', recent: false });
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [wordToDelete, setWordToDelete] = useState<string | null>(null);
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+  const [wordDetailModalOpen, setWordDetailModalOpen] = useState(false);
 
   const ITEMS_PER_PAGE = 12;
 
@@ -62,13 +65,21 @@ export default function Home() {
   const addWord = async (germanWord: string) => {
     try {
       setError('');
+      
+      // Create an AbortController for timeout
+      const abortController = new AbortController();
+      const timeoutId = setTimeout(() => abortController.abort(), 30000); // 30 second timeout
+      
       const response = await fetch('/api/words', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ germanWord }),
+        signal: abortController.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       const data = await response.json();
       
@@ -80,7 +91,11 @@ export default function Home() {
         return false;
       }
     } catch (error) {
-      setError('Failed to add word');
+      if (error instanceof Error && error.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError('Failed to add word. Please try again.');
+      }
       console.error('Error adding word:', error);
       return false;
     }
@@ -120,9 +135,26 @@ export default function Home() {
     setWordToDelete(null);
   };
 
+  const openWordDetail = (word: Word) => {
+    setSelectedWord(word);
+    setWordDetailModalOpen(true);
+  };
+
+  const closeWordDetail = () => {
+    setWordDetailModalOpen(false);
+    setSelectedWord(null);
+  };
+
   // Filtering and search logic
   const filteredAndSearchedWords = useMemo(() => {
     let filtered = words;
+
+    // Apply recently added filter (last 7 days)
+    if (filters.recent) {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      filtered = filtered.filter((word) => new Date(word.createdAt) > sevenDaysAgo);
+    }
 
     // Apply search filter
     if (searchTerm.trim()) {
@@ -142,6 +174,13 @@ export default function Home() {
     // Apply alphabet filter
     if (filters.alpha !== 'All') {
       filtered = filtered.filter((word) => word.german.startsWith(filters.alpha));
+    }
+
+    // Sort results - by date if recent filter is active, otherwise alphabetically
+    if (filters.recent) {
+      filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } else {
+      filtered.sort((a, b) => a.german.localeCompare(b.german));
     }
 
     return filtered;
@@ -172,15 +211,15 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${theme.gradient}`}>
-      <div className="container mx-auto p-4 md:p-8 max-w-6xl">
+      <div className="container mx-auto p-3 md:p-6 max-w-7xl">
         {/* Header with theme selector */}
-        <header className="flex items-center justify-between mb-8">
+        <header className="flex items-center justify-between mb-6">
           <div className="flex-1 text-center">
-            <h1 className={`text-4xl md:text-5xl font-light ${theme.text.primary} mb-2`}>
+            <h1 className={`text-3xl md:text-4xl font-light ${theme.text.primary} mb-1`}>
               Deutsch<span className={`font-semibold ${theme.text.accent}`}>Wörter</span>
             </h1>
-            <p className={`${theme.text.secondary} text-lg font-light`}>
-              Your personal space to master German vocabulary
+            <p className={`${theme.text.secondary} text-sm font-light`}>
+              Your personal German vocabulary
             </p>
           </div>
           <div className="absolute top-4 right-4">
@@ -188,34 +227,42 @@ export default function Home() {
           </div>
         </header>
 
-        <main className="space-y-6">
-          <WordInput onAddWord={addWord} error={error} />
-          
-          <SearchBar 
-            searchTerm={searchTerm} 
-            onSearchChange={setSearchTerm} 
-            resultCount={filteredAndSearchedWords.length}
-          />
-          
-          <FilterButtons 
-            filters={filters} 
-            setFilters={setFilters} 
-            words={words} 
-          />
-          
-          <WordsTable 
-            words={paginatedWords} 
-            onDeleteWord={openDeleteModal} 
-          />
-          
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            totalItems={filteredAndSearchedWords.length}
-            itemsPerPage={ITEMS_PER_PAGE}
-          />
-        </main>
+        {/* Main layout with sidebar */}
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Main content area */}
+          <main className="flex-1 space-y-4">
+            <FilterButtons 
+              filters={filters} 
+              setFilters={setFilters} 
+              words={words} 
+            />
+            
+            <WordsTable 
+              words={paginatedWords} 
+              onDeleteWord={openDeleteModal}
+              onWordClick={openWordDetail}
+            />
+            
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              totalItems={filteredAndSearchedWords.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+            />
+          </main>
+
+          {/* Right sidebar */}
+          <aside className="w-full lg:w-80 space-y-4">
+            <SearchBar 
+              searchTerm={searchTerm} 
+              onSearchChange={setSearchTerm} 
+              resultCount={filteredAndSearchedWords.length}
+            />
+            
+            <WordInput onAddWord={addWord} error={error} />
+          </aside>
+        </div>
 
         {deleteModalOpen && (
           <DeleteModal
@@ -224,6 +271,12 @@ export default function Home() {
             onCancel={closeDeleteModal}
           />
         )}
+
+        <WordDetailModal
+          word={selectedWord}
+          isOpen={wordDetailModalOpen}
+          onClose={closeWordDetail}
+        />
       </div>
     </div>
   );

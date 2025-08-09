@@ -45,7 +45,7 @@ export default function Pagination({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className={`${theme.glass} rounded-2xl p-4 mt-6`}>
+    <div className={`${theme.glass} rounded-xl p-3 mt-4`}>
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Results info */}
         <div className={`${theme.text.secondary} text-sm`}>

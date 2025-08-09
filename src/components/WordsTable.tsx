@@ -6,6 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 interface WordsTableProps {
   words: Word[];
   onDeleteWord: (german: string) => void;
+  onWordClick?: (word: Word) => void;
 }
 
 function getWordTypeClass(partOfSpeech: string, theme: any): string {
@@ -23,7 +24,7 @@ function getWordTypeClass(partOfSpeech: string, theme: any): string {
   }
 }
 
-export default function WordsTable({ words, onDeleteWord }: WordsTableProps) {
+export default function WordsTable({ words, onDeleteWord, onWordClick }: WordsTableProps) {
   const { theme } = useTheme();
   
   if (words.length === 0) {
@@ -50,79 +51,62 @@ export default function WordsTable({ words, onDeleteWord }: WordsTableProps) {
     );
   }
 
+  // Words are already sorted in the parent component
+  const sortedWords = words;
+
   return (
-    <div className={`${theme.glass} rounded-2xl overflow-hidden`}>
-      <div className="grid gap-4 p-6">
-        {words.map((word, index) => (
+    <div className={`${theme.glass} rounded-xl overflow-hidden`}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 p-4">
+        {sortedWords.map((word, index) => (
           <div 
             key={word.german} 
-            className={`${theme.card.bg} backdrop-blur-sm rounded-xl p-6 ${theme.card.hover} transition-all duration-300 hover-lift`}
-            style={{ animationDelay: `${index * 0.1}s` }}
+            className={`${theme.card.bg} backdrop-blur-sm rounded-lg p-3 ${theme.card.hover} transition-all duration-300 hover-lift group cursor-pointer`}
+            style={{ animationDelay: `${index * 0.05}s` }}
+            onClick={() => onWordClick?.(word)}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className={`${theme.text.accent} font-medium text-lg`}>{word.article}</span>
-                    <h3 className={`text-2xl font-semibold ${theme.text.primary} capitalize`}>{word.german}</h3>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getWordTypeClass(word.partOfSpeech, theme)}`}>
-                    {word.partOfSpeech}
-                  </span>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <p className={`${theme.text.primary} font-medium mb-1`}>{word.translation}</p>
-                    <p className={`${theme.text.secondary} text-sm`}>{word.definition}</p>
-                  </div>
-                  
-                  <div>
-                    {word.examples && word.examples.length > 0 && (
-                      <div>
-                        <h4 className={`${theme.text.primary} font-medium text-sm mb-2`}>Examples:</h4>
-                        <ul className="space-y-1">
-                          {word.examples.slice(0, 2).map((example, i) => (
-                            <li key={i} className={`${theme.text.secondary} text-sm italic`}>
-                              • {example}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {word.alternateMeanings && word.alternateMeanings.length > 0 && (
-                      <div className="mt-3">
-                        <h4 className={`${theme.text.primary} font-medium text-sm mb-1`}>Also means:</h4>
-                        <p className={`${theme.text.secondary} text-sm`}>
-                          {word.alternateMeanings.join(', ')}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+            {/* Header with article + word + delete */}
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <span className={`${theme.text.accent} font-semibold text-sm flex-shrink-0`}>{word.article}</span>
+                <h3 className={`font-bold ${theme.text.primary} capitalize truncate text-base`}>{word.german}</h3>
               </div>
-              
               <button
-                onClick={() => onDeleteWord(word.german)}
-                className={`ml-4 p-2 ${theme.text.secondary} hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all duration-200`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteWord(word.german);
+                }}
+                className={`p-1 ${theme.text.secondary} hover:text-red-400 hover:bg-red-500/20 rounded opacity-0 group-hover:opacity-100 transition-all duration-200 flex-shrink-0`}
                 title={`Delete ${word.german}`}
               >
-                <svg 
-                  className="h-5 w-5" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth="2" 
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
-                  />
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
               </button>
             </div>
+
+            {/* Word type badge */}
+            <div className="mb-2">
+              <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${getWordTypeClass(word.partOfSpeech, theme)}`}>
+                {word.partOfSpeech}
+              </span>
+            </div>
+
+            {/* Translation only */}
+            <div className="mb-2">
+              <p className={`${theme.text.primary} font-medium text-sm truncate`} title={word.translation}>
+                {word.translation}
+              </p>
+            </div>
+
+            {/* German Examples (if available) - prominently displayed */}
+            {word.examples && word.examples.length > 0 && (
+              <div className="mt-2 pt-2 border-t border-current/10">
+                <p className={`${theme.text.accent} text-xs font-medium mb-1`}>Beispiel:</p>
+                <p className={`${theme.text.secondary} text-xs italic leading-relaxed truncate`} title={word.examples[0]}>
+                  "{word.examples[0]}"
+                </p>
+              </div>
+            )}
           </div>
         ))}
       </div>
