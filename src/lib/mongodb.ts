@@ -12,10 +12,10 @@ interface MongooseConnection {
 }
 
 // Global variable to cache the connection
-let cached: MongooseConnection = (global as any).mongoose;
+let cached: MongooseConnection = (global as Record<string, unknown>).mongoose as MongooseConnection;
 
 if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+  cached = (global as Record<string, unknown>).mongoose = { conn: null, promise: null };
 }
 
 async function connectMongoDB(): Promise<typeof mongoose> {

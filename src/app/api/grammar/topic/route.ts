@@ -132,7 +132,7 @@ Make sure:
 function getFallbackGrammarData(topic: string) {
   const topicLower = topic.toLowerCase();
   
-  const fallbackTopics: Record<string, any> = {
+  const fallbackTopics: Record<string, Record<string, unknown>> = {
     'nominativ': {
       topic: "Nominativ (Nominative Case)",
       explanation: "The nominative case is used for the subject of a sentence - the person or thing performing the action. It answers the question 'who?' or 'what?'",

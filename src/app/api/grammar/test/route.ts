@@ -124,21 +124,21 @@ Requirements:
       }
 
       // Ensure all questions have required fields
-      testData.questions = testData.questions.map((q: any, index: number) => ({
-        id: q.id || String(index + 1),
-        type: q.type || 'mcq',
-        question: q.question || '',
-        germanContext: q.germanContext,
-        options: q.options,
-        correctAnswer: q.correctAnswer,
-        correctAnswers: q.correctAnswers,
-        explanation: q.explanation || '',
-        points: q.points || 1
+      testData.questions = testData.questions.map((q: Record<string, unknown>, index: number) => ({
+        id: q.id as string || String(index + 1),
+        type: q.type as string || 'mcq',
+        question: q.question as string || '',
+        germanContext: q.germanContext as string,
+        options: q.options as string[],
+        correctAnswer: q.correctAnswer as string,
+        correctAnswers: q.correctAnswers as string[],
+        explanation: q.explanation as string || '',
+        points: q.points as number || 1
       }));
 
       return {
         questions: testData.questions,
-        totalPoints: testData.totalPoints || testData.questions.reduce((sum: number, q: any) => sum + q.points, 0),
+        totalPoints: testData.totalPoints || testData.questions.reduce((sum: number, q: Record<string, unknown>) => sum + (q.points as number || 0), 0),
         passingScore: testData.passingScore || Math.ceil(testData.totalPoints * 0.7),
         timeLimit: testData.timeLimit || 15
       };

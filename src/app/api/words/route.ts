@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase, Word } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
 
 // GET - Fetch all words
 export async function GET() {
@@ -35,11 +35,11 @@ export async function POST(request: NextRequest) {
     try {
       wordDetails = await Promise.race([
         getWordDetailsFromAI(germanWord.trim().toLowerCase()),
-        new Promise<any>((_, reject) => 
+        new Promise<never>((_, reject) => 
           setTimeout(() => reject(new Error('API timeout')), 25000) // Increased timeout to 25 seconds
         )
       ]);
-    } catch (timeoutError) {
+    } catch (error) {
       console.log('API timeout, using fallback for:', germanWord);
       wordDetails = getBasicWordDetails(germanWord.trim().toLowerCase());
     }

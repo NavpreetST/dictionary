@@ -106,7 +106,7 @@ class SQLiteDatabase implements DatabaseInterface {
         
         const lastID = this.lastID;
 
-        databaseInstance.get('SELECT * FROM words WHERE id = ?', [lastID], (err: Error | null, row: any) => {
+        databaseInstance.get('SELECT * FROM words WHERE id = ?', [lastID], (err: Error | null, row: Record<string, unknown>) => {
           if (err) {
             reject(err);
           } else {
@@ -129,7 +129,7 @@ class SQLiteDatabase implements DatabaseInterface {
     if (!this.db) throw new Error('Database not initialized');
     
     return new Promise((resolve, reject) => {
-      this.db!.all('SELECT * FROM words ORDER BY german ASC', (err, rows: any[]) => {
+      this.db!.all('SELECT * FROM words ORDER BY german ASC', (err, rows: Record<string, unknown>[]) => {
         if (err) {
           reject(err);
         } else {
@@ -173,8 +173,8 @@ class SQLiteDatabase implements DatabaseInterface {
 // MongoDB implementation
 class MongoDatabase implements DatabaseInterface {
   private isConnected = false;
-  private connectMongoDB: any = null;
-  private WordModel: any = null;
+  private connectMongoDB: (() => Promise<unknown>) | null = null;
+  private WordModel: Record<string, unknown> | null = null;
 
   async init(): Promise<void> {
     if (!this.isConnected) {
@@ -195,7 +195,7 @@ class MongoDatabase implements DatabaseInterface {
     
     try {
       // Use upsert to replace existing word if it exists
-      const result = await this.WordModel.findOneAndUpdate(
+      const result = await (this.WordModel as any).findOneAndUpdate(
         { german: word.german },
         {
           ...word,
@@ -229,7 +229,7 @@ class MongoDatabase implements DatabaseInterface {
     await this.init();
     
     try {
-      const words = await this.WordModel.find({}).sort({ german: 1 });
+      const words = await (this.WordModel as any).find({}).sort({ german: 1 });
       
       return words.map((word: any) => ({
         id: word._id.toString(),
@@ -251,7 +251,7 @@ class MongoDatabase implements DatabaseInterface {
     await this.init();
     
     try {
-      await this.WordModel.deleteOne({ german });
+      await (this.WordModel as any).deleteOne({ german });
     } catch (error: any) {
       throw new Error(`Failed to delete word: ${error.message}`);
     }
