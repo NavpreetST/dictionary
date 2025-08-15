@@ -112,10 +112,10 @@ class SQLiteDatabase implements DatabaseInterface {
           } else {
             const parsedWord: Word = {
               ...row,
-              examples: row.examples ? JSON.parse(row.examples) : [],
-              alternateMeanings: row.alternateMeanings ? JSON.parse(row.alternateMeanings) : [],
-              createdAt: new Date(row.createdAt).toISOString(),
-            };
+              examples: row.examples ? JSON.parse(row.examples as string) : [],
+              alternateMeanings: row.alternateMeanings ? JSON.parse(row.alternateMeanings as string) : [],
+              createdAt: new Date(row.createdAt as string).toISOString(),
+            } as Word;
             resolve(parsedWord);
           }
         });
@@ -135,9 +135,9 @@ class SQLiteDatabase implements DatabaseInterface {
         } else {
           const parsedWords: Word[] = rows.map(row => ({
             ...row,
-            examples: row.examples ? JSON.parse(row.examples) : [],
-            alternateMeanings: row.alternateMeanings ? JSON.parse(row.alternateMeanings) : []
-          }));
+            examples: row.examples ? JSON.parse(row.examples as string) : [],
+            alternateMeanings: row.alternateMeanings ? JSON.parse(row.alternateMeanings as string) : []
+          } as Word));
           resolve(parsedWords);
         }
       });
@@ -174,7 +174,7 @@ class SQLiteDatabase implements DatabaseInterface {
 class MongoDatabase implements DatabaseInterface {
   private isConnected = false;
   private connectMongoDB: (() => Promise<unknown>) | null = null;
-  private WordModel: Record<string, unknown> | null = null;
+  private WordModel: any = null;
 
   async init(): Promise<void> {
     if (!this.isConnected) {

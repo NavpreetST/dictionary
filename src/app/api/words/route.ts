@@ -176,6 +176,8 @@ function getBasicWordDetails(word: string): {
   article: string;
   definition: string;
   translation: string;
+  examples?: string[];
+  alternateMeanings?: string[];
 } {
   // Basic German articles assignment (very simplified)
   const commonNouns: Record<string, { article: string; translation: string; definition: string }> = {
@@ -237,5 +239,7 @@ function getBasicWordDetails(word: string): {
     article,
     definition,
     translation,
+    examples: [],
+    alternateMeanings: [],
   };
 }
