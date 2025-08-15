@@ -146,18 +146,56 @@ export default function GrammarPage() {
   const [showTest, setShowTest] = useState(false);
   const [testResults, setTestResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleTopicSubmit = async (topic: string) => {
     setLoading(true);
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    setError('');
     
-    // For now, use dummy data
-    setCurrentTopic(dummyTopicData);
-    setTestData(dummyTestData);
-    setShowTest(false);
-    setTestResults(null);
-    setLoading(false);
+    try {
+      // Fetch topic explanation
+      const topicResponse = await fetch('/api/grammar/topic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ topic }),
+      });
+
+      if (!topicResponse.ok) {
+        throw new Error('Failed to fetch topic explanation');
+      }
+
+      const topicData = await topicResponse.json();
+      setCurrentTopic(topicData);
+
+      // Fetch test questions
+      const testResponse = await fetch('/api/grammar/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ topic }),
+      });
+
+      if (!testResponse.ok) {
+        throw new Error('Failed to generate test');
+      }
+
+      const testData = await testResponse.json();
+      setTestData(testData);
+      
+      setShowTest(false);
+      setTestResults(null);
+    } catch (error) {
+      console.error('Error loading grammar topic:', error);
+      setError('Failed to load grammar topic. Please try again.');
+      // Fallback to dummy data if API fails
+      setCurrentTopic(dummyTopicData);
+      setTestData(dummyTestData);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleStartTest = () => {
@@ -196,6 +234,13 @@ export default function GrammarPage() {
             Master German grammar with explanations and interactive tests
           </p>
         </header>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+            <p className="text-red-400">{error}</p>
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="space-y-6">
