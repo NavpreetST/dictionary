@@ -114,13 +114,16 @@ async function getWordDetailsFromAI(word: string): Promise<{
 1. Part of speech (Noun, Verb, Adjective, Adverb, Other)
 2. Article (der/die/das for nouns, "–" for others)
 3. Primary English translation
-4. Simple English definition
+4. DEUTSCHE Definition - Eine einfache deutsche Definition (Simple German definition in Deutsche)
 5. 2-3 German example sentences using the word
 6. Any alternate meanings or translations (if applicable)
 
-Format as JSON: {"partOfSpeech": "Noun", "article": "der", "translation": "dog", "definition": "A domestic canine", "examples": ["Der Hund bellt laut.", "Ich gehe mit dem Hund spazieren."], "alternateMeanings": ["colloquial: person (derogatory)"]}`
+WICHTIG: Die Definition soll auf DEUTSCH geschrieben werden, nicht auf Englisch! (IMPORTANT: The definition should be written in GERMAN, not English!)
 
-// If no examples or alternate meanings exist, use empty arrays.`;
+Format as JSON: {"partOfSpeech": "Noun", "article": "der", "translation": "dog", "definition": "Ein domestiziertes Säugetier, das als Haustier gehalten wird (A domesticated mammal kept as a pet)", "examples": ["Der Hund bellt laut.", "Ich gehe mit dem Hund spazieren."], "alternateMeanings": ["umgangssprachlich: Person (abwertend) - colloquial: person (derogatory)"]}
+
+// If no examples or alternate meanings exist, use empty arrays.
+// Remember: definition must be in German language with optional English translation in parentheses.`;
     
     const payload = {
       contents: [{
@@ -176,37 +179,37 @@ function getBasicWordDetails(word: string): {
 } {
   // Basic German articles assignment (very simplified)
   const commonNouns: Record<string, { article: string; translation: string; definition: string }> = {
-    'haus': { article: 'das', translation: 'house', definition: 'A building for human habitation' },
-    'katze': { article: 'die', translation: 'cat', definition: 'A small domesticated carnivorous mammal' },
-    'hund': { article: 'der', translation: 'dog', definition: 'A domesticated carnivorous mammal' },
-    'wasser': { article: 'das', translation: 'water', definition: 'A colorless, transparent, odorless liquid' },
-    'buch': { article: 'das', translation: 'book', definition: 'A set of written or printed pages' },
-    'auto': { article: 'das', translation: 'car', definition: 'A road vehicle with an engine' },
-    'frau': { article: 'die', translation: 'woman', definition: 'An adult female human being' },
-    'mann': { article: 'der', translation: 'man', definition: 'An adult male human being' },
-    'kind': { article: 'das', translation: 'child', definition: 'A young human being' },
-    'tisch': { article: 'der', translation: 'table', definition: 'A piece of furniture with a flat top' },
-    'stuhl': { article: 'der', translation: 'chair', definition: 'A seat for one person' },
-    'fenster': { article: 'das', translation: 'window', definition: 'An opening in a wall filled with glass' },
+    'haus': { article: 'das', translation: 'house', definition: 'Ein Gebäude, in dem Menschen wohnen (A building where people live)' },
+    'katze': { article: 'die', translation: 'cat', definition: 'Ein kleines domestiziertes Raubtier als Haustier (A small domesticated predator kept as a pet)' },
+    'hund': { article: 'der', translation: 'dog', definition: 'Ein domestiziertes Säugetier, das als Haustier gehalten wird (A domesticated mammal kept as a pet)' },
+    'wasser': { article: 'das', translation: 'water', definition: 'Eine farblose, durchsichtige Flüssigkeit (A colorless, transparent liquid)' },
+    'buch': { article: 'das', translation: 'book', definition: 'Eine Sammlung von geschriebenen oder gedruckten Seiten (A collection of written or printed pages)' },
+    'auto': { article: 'das', translation: 'car', definition: 'Ein Straßenfahrzeug mit einem Motor (A road vehicle with an engine)' },
+    'frau': { article: 'die', translation: 'woman', definition: 'Eine erwachsene weibliche Person (An adult female person)' },
+    'mann': { article: 'der', translation: 'man', definition: 'Eine erwachsene männliche Person (An adult male person)' },
+    'kind': { article: 'das', translation: 'child', definition: 'Ein junger Mensch (A young human being)' },
+    'tisch': { article: 'der', translation: 'table', definition: 'Ein Möbelstück mit einer flachen Oberfläche (A piece of furniture with a flat surface)' },
+    'stuhl': { article: 'der', translation: 'chair', definition: 'Ein Sitzmöbel für eine Person (A seat for one person)' },
+    'fenster': { article: 'das', translation: 'window', definition: 'Eine Öffnung in der Wand, die mit Glas gefüllt ist (An opening in a wall filled with glass)' },
   };
 
   const commonVerbs: Record<string, { translation: string; definition: string }> = {
-    'sein': { translation: 'to be', definition: 'To exist or to have the quality of' },
-    'haben': { translation: 'to have', definition: 'To possess or own something' },
-    'gehen': { translation: 'to go', definition: 'To move from one place to another' },
-    'kommen': { translation: 'to come', definition: 'To move toward a specific location' },
-    'machen': { translation: 'to make/do', definition: 'To create or perform an action' },
-    'sehen': { translation: 'to see', definition: 'To perceive with the eyes' },
-    'sagen': { translation: 'to say', definition: 'To speak words or express verbally' },
+    'sein': { translation: 'to be', definition: 'Existieren oder eine Eigenschaft haben (To exist or to have a quality)' },
+    'haben': { translation: 'to have', definition: 'Etwas besitzen oder innehaben (To possess or own something)' },
+    'gehen': { translation: 'to go', definition: 'Sich von einem Ort zu einem anderen bewegen (To move from one place to another)' },
+    'kommen': { translation: 'to come', definition: 'Sich zu einem bestimmten Ort hin bewegen (To move toward a specific location)' },
+    'machen': { translation: 'to make/do', definition: 'Etwas erschaffen oder eine Handlung ausführen (To create or perform an action)' },
+    'sehen': { translation: 'to see', definition: 'Mit den Augen wahrnehmen (To perceive with the eyes)' },
+    'sagen': { translation: 'to say', definition: 'Wörter aussprechen oder verbal ausdrücken (To speak words or express verbally)' },
   };
 
   const commonAdjectives: Record<string, { translation: string; definition: string }> = {
-    'gut': { translation: 'good', definition: 'Of high quality or satisfactory' },
-    'groß': { translation: 'big/tall', definition: 'Of large size or extent' },
-    'klein': { translation: 'small', definition: 'Of little size or extent' },
-    'schön': { translation: 'beautiful', definition: 'Pleasing to look at; attractive' },
-    'alt': { translation: 'old', definition: 'Having lived for a long time' },
-    'neu': { translation: 'new', definition: 'Recently made or obtained' },
+    'gut': { translation: 'good', definition: 'Von hoher Qualität oder zufriedenstellend (Of high quality or satisfactory)' },
+    'groß': { translation: 'big/tall', definition: 'Von großer Größe oder Ausdehnung (Of large size or extent)' },
+    'klein': { translation: 'small', definition: 'Von geringer Größe oder Ausdehnung (Of little size or extent)' },
+    'schön': { translation: 'beautiful', definition: 'Angenehm anzusehen; attraktiv (Pleasing to look at; attractive)' },
+    'alt': { translation: 'old', definition: 'Lange gelebt habend oder existierend (Having lived or existed for a long time)' },
+    'neu': { translation: 'new', definition: 'Kürzlich gemacht oder erhalten (Recently made or obtained)' },
   };
 
   let partOfSpeech = 'Other';
