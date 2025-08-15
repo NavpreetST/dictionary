@@ -146,14 +146,19 @@ export default function GrammarPage() {
   const [showTest, setShowTest] = useState(false);
   const [testResults, setTestResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [topicLoading, setTopicLoading] = useState(false);
+  const [testLoading, setTestLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleTopicSubmit = async (topic: string) => {
     setLoading(true);
+    setTopicLoading(true);
     setError('');
+    setCurrentTopic(null);
+    setTestData(null);
     
     try {
-      // Fetch topic explanation
+      // Fetch topic explanation first
       const topicResponse = await fetch('/api/grammar/topic', {
         method: 'POST',
         headers: {
@@ -168,8 +173,10 @@ export default function GrammarPage() {
 
       const topicData = await topicResponse.json();
       setCurrentTopic(topicData);
-
-      // Fetch test questions
+      setTopicLoading(false);
+      
+      // Now fetch test questions after topic is loaded
+      setTestLoading(true);
       const testResponse = await fetch('/api/grammar/test', {
         method: 'POST',
         headers: {
@@ -184,6 +191,7 @@ export default function GrammarPage() {
 
       const testData = await testResponse.json();
       setTestData(testData);
+      setTestLoading(false);
       
       setShowTest(false);
       setTestResults(null);
@@ -193,6 +201,8 @@ export default function GrammarPage() {
       // Fallback to dummy data if API fails
       setCurrentTopic(dummyTopicData);
       setTestData(dummyTestData);
+      setTopicLoading(false);
+      setTestLoading(false);
     } finally {
       setLoading(false);
     }

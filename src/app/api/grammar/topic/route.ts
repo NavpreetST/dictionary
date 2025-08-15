@@ -33,17 +33,19 @@ async function getGrammarExplanation(topic: string) {
   }
 
   try {
-    const prompt = `Provide a comprehensive explanation for the German grammar topic: "${topic}"
+    const prompt = `Provide a comprehensive explanation for the German grammar topic: "${topic}" in GERMAN language (Deutsche).
+
+WICHTIG: Alle Erklärungen, Regeln und Tipps sollen auf DEUTSCH sein, mit englischen Übersetzungen in Klammern für schwierige Begriffe.
 
 Please format your response as a JSON object with the following structure:
 {
   "topic": "The topic name in German (English translation)",
-  "explanation": "A clear, concise explanation of the grammar concept (2-3 sentences)",
+  "explanation": "Eine klare, präzise Erklärung des Grammatikkonzepts auf Deutsch (2-3 Sätze). A clear, concise explanation of the grammar concept in German (2-3 sentences)",
   "rules": [
-    "Rule 1 with clear explanation",
-    "Rule 2 with clear explanation",
-    "Rule 3 with clear explanation",
-    "Rule 4 with clear explanation"
+    "Regel 1 mit klarer Erklärung auf Deutsch (Rule 1 with clear explanation in German)",
+    "Regel 2 mit klarer Erklärung auf Deutsch (Rule 2 with clear explanation in German)",
+    "Regel 3 mit klarer Erklärung auf Deutsch (Rule 3 with clear explanation in German)",
+    "Regel 4 mit klarer Erklärung auf Deutsch (Rule 4 with clear explanation in German)"
   ],
   "examples": [
     {
@@ -54,18 +56,19 @@ Please format your response as a JSON object with the following structure:
     // Include 4-6 examples
   ],
   "tips": [
-    "Practical tip 1 for mastering this concept",
-    "Practical tip 2",
-    "Practical tip 3"
+    "Praktischer Tipp 1 zum Meistern dieses Konzepts auf Deutsch (Practical tip 1 for mastering this concept in German)",
+    "Praktischer Tipp 2 auf Deutsch (Practical tip 2 in German)",
+    "Praktischer Tipp 3 auf Deutsch (Practical tip 3 in German)"
   ]
 }
 
 Make sure:
-1. The explanation is clear and suitable for intermediate learners
-2. Rules are practical and easy to understand
-3. Examples are relevant and demonstrate the concept clearly
-4. The highlight field contains the exact text from the german sentence that shows the grammar point
-5. Tips provide practical advice for remembering or using the concept`;
+1. ALLE Erklärungen sind auf DEUTSCH geschrieben (All explanations are written in GERMAN)
+2. Die Erklärung ist klar und für Fortgeschrittene geeignet (The explanation is clear and suitable for intermediate learners)
+3. Regeln sind praktisch und leicht verständlich auf Deutsch (Rules are practical and easy to understand in German)
+4. Beispiele sind relevant und demonstrieren das Konzept klar (Examples are relevant and demonstrate the concept clearly)
+5. Das Highlight-Feld enthält den genauen Text aus dem deutschen Satz (The highlight field contains the exact text from the german sentence)
+6. Tipps geben praktische Ratschläge auf Deutsch zum Merken oder Verwenden des Konzepts (Tips provide practical advice in German for remembering or using the concept)`;
 
     const payload = {
       contents: [{
