@@ -269,7 +269,14 @@ export default function GrammarPage() {
             <>
               <GrammarExplanation topic={currentTopic} />
               
-              {testData && (
+              {testLoading && (
+                <div className={`${theme.glass} rounded-2xl p-8 text-center`}>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-current mx-auto mb-3"></div>
+                  <p className={theme.text.primary}>Generating practice test...</p>
+                </div>
+              )}
+              
+              {testData && !testLoading && (
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
                     onClick={handleStartTest}
