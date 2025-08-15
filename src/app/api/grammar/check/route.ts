@@ -42,27 +42,41 @@ async function checkAnswer(question: string, userAnswer: string, context?: strin
   }
 
   try {
-    const prompt = `You are a German language teacher evaluating a student's answer.
+    const prompt = `You are a supportive German language teacher evaluating a student's answer.
 
 Question: ${question}
 ${context ? `Context: ${context}` : ''}
 Student's Answer: ${userAnswer}
 
-Please evaluate if the answer is correct, partially correct, or incorrect.
-Consider:
-1. Grammar accuracy
-2. Spelling (allow minor variations like ß/ss)
-3. Word order flexibility in German
-4. Accept alternative phrasings that convey the same meaning
+Please evaluate the answer with these considerations:
+1. Accept answers that convey the correct meaning even with minor grammar errors
+2. Allow spelling variations (ß/ss, ae/ä, oe/ö, ue/ü)
+3. German has flexible word order - accept valid variations
+4. Give partial credit for attempts that show understanding
+5. For Präteritum specifically: "kaufte" is correct for "bought", "brachte" means "brought"
+6. Be encouraging and educational in feedback
+
+Important grammar notes:
+- "kaufen" (to buy) → Präteritum: "kaufte"
+- "bringen" (to bring) → Präteritum: "brachte" 
+- "ein neues Auto" is correct (neuter noun with accusative case)
+- Word order can be "Sie kaufte" or "kaufte sie" depending on context
+
+Score generously:
+- 100: Perfect answer
+- 80-99: Minor errors that don't affect meaning
+- 70-79: Some errors but core meaning is correct
+- 50-69: Significant errors but shows effort
+- Below 50: Major errors or wrong concept
 
 Respond with a JSON object:
 {
-  "correct": true/false,
-  "score": 0-100 (percentage score),
-  "feedback": "Brief constructive feedback",
-  "correctedAnswer": "The corrected version if incorrect, or the answer itself if correct",
-  "alternativeAnswers": ["other acceptable answers"],
-  "grammarNotes": "Specific grammar points to note"
+  "correct": true/false (true if score >= 70),
+  "score": 0-100,
+  "feedback": "Encouraging and constructive feedback",
+  "correctedAnswer": "The ideal answer",
+  "alternativeAnswers": ["other acceptable variations"],
+  "grammarNotes": "Helpful grammar tips"
 }`;
 
     const payload = {

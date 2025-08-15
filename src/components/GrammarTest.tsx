@@ -32,6 +32,7 @@ export default function GrammarTest({ testData, onComplete, onCancel }: GrammarT
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [checkingAnswer, setCheckingAnswer] = useState(false);
   const [startTime] = useState(Date.now());
   const [timeLeft, setTimeLeft] = useState(testData.timeLimit ? testData.timeLimit * 60 : 0);
 
@@ -68,6 +69,7 @@ export default function GrammarTest({ testData, onComplete, onCancel }: GrammarT
     if (question.type === 'mcq' || question.type === 'fillup') {
       return normalizedAnswer === question.correctAnswer?.toLowerCase();
     } else if (question.type === 'input' && question.correctAnswers) {
+      // For now, do basic checking. AI checking will be done separately
       return question.correctAnswers.some(
         correct => normalizedAnswer === correct.toLowerCase()
       );
@@ -75,12 +77,53 @@ export default function GrammarTest({ testData, onComplete, onCancel }: GrammarT
     return false;
   };
 
-  const handleAnswerSubmit = () => {
+  const handleAnswerSubmit = async () => {
     if (!currentAnswer.trim()) return;
 
-    const correct = checkAnswer(currentQuestion, currentAnswer);
+    let correct = false;
+    let aiChecked = false;
+    
+    // For text input questions, use AI checking
+    if (currentQuestion.type === 'input') {
+      setCheckingAnswer(true);
+      try {
+        const response = await fetch('/api/grammar/check', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            question: currentQuestion.question,
+            userAnswer: currentAnswer,
+            context: `Expected answers include: ${currentQuestion.correctAnswers?.join(', ')}`
+          }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          correct = result.correct || result.score >= 70;
+          aiChecked = true;
+          
+          // Store AI feedback for display
+          if (!correct && result.correctedAnswer) {
+            // Update the correct answer to show the AI's correction
+            currentQuestion.correctAnswer = result.correctedAnswer;
+            currentQuestion.explanation = result.feedback || currentQuestion.explanation;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking answer with AI:', error);
+      }
+    }
+    
+    // Fallback to basic checking if AI check failed or for other question types
+    if (!aiChecked) {
+      correct = checkAnswer(currentQuestion, currentAnswer);
+    }
+    
     setIsCorrect(correct);
     setShowFeedback(true);
+    setCheckingAnswer(false);
     
     // Store the answer
     setAnswers({
@@ -312,18 +355,32 @@ export default function GrammarTest({ testData, onComplete, onCancel }: GrammarT
         {!showFeedback && currentQuestion.type !== 'mcq' ? (
           <button
             onClick={handleAnswerSubmit}
-            disabled={!currentAnswer.trim()}
+            disabled={!currentAnswer.trim() || checkingAnswer}
             className={`${theme.button.primary} ${theme.button.primaryHover} px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            Submit Answer
+            {checkingAnswer ? (
+              <span className="flex items-center">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                Checking...
+              </span>
+            ) : (
+              'Submit Answer'
+            )}
           </button>
         ) : currentQuestion.type === 'mcq' && !showFeedback ? (
           <button
             onClick={handleAnswerSubmit}
-            disabled={!currentAnswer}
+            disabled={!currentAnswer || checkingAnswer}
             className={`${theme.button.primary} ${theme.button.primaryHover} px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            Submit Answer
+            {checkingAnswer ? (
+              <span className="flex items-center">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                Checking...
+              </span>
+            ) : (
+              'Submit Answer'
+            )}
           </button>
         ) : (
           <button
