@@ -235,6 +235,22 @@ export default function Home() {
           </div>
         </header>
 
+        {/* Navigation */}
+        <nav className="flex justify-center gap-4 mb-6">
+          <a
+            href="/"
+            className={`${theme.button.primary} ${theme.button.primaryHover} px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105`}
+          >
+            📚 Dictionary
+          </a>
+          <a
+            href="/grammar"
+            className={`${theme.glass} ${theme.text.secondary} hover:${theme.text.primary} px-4 py-2 rounded-lg font-medium transition-all duration-200 border border-current/20 hover:bg-white/10`}
+          >
+            📖 Grammar Learning
+          </a>
+        </nav>
+
         {/* Main layout with sidebar */}
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Main content area */}
